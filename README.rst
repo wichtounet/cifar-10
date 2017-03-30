@@ -18,7 +18,7 @@ test labels:
 
 .. code:: cpp
 
-   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
+   auto dataset = cifar::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
 The first two template arguments defines which container will be used for the
 collections. The third argument is the type that is used to store a pixel (value
@@ -36,16 +36,6 @@ download_cifar10.sh script in order to download them:
 .. code:: bash
 
     ./download_cifar10.sh
-
-Utilities
----------
-
-The header cifar10_utils.hpp contains two utilities that can be useful when using
-MNIST in machine learning activities:
-
-* :code:`binarize_dataset(dataset)` Binarize all the images in the data set
-* :code:`normalize_dataset(dataset)` Normalize all the images in the data set to
-  a zero mean and unit variance.
 
 License
 -------
