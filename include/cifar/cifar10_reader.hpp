@@ -154,8 +154,8 @@ template <template <typename...> class Container, typename Image, typename Label
 CIFAR10_dataset<Container, Image, Label> read_dataset_3d(std::size_t training_limit = 0) {
     CIFAR10_dataset<Container, Image, Label> dataset;
 
-    read_training<Container, Image>(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
-    read_test<Container, Image>(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
+    read_training(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
+    read_test(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
 
     return dataset;
 }
@@ -165,16 +165,16 @@ CIFAR10_dataset<Container, Image, Label> read_dataset_3d(std::size_t training_li
  *
  * The dataset is assumed to be in a cifar-10 subfolder
  *
- * \param training_limit The maximum number of elements to read from training set (0: no limit)
- * \param test_limit The maximum number of elements to read from test set (0: no limit)
+ * \param training_limit The maximum number of elements to read from data set (0: no limit)
+ *
  * \return The dataset
  */
 template <template <typename...> class Container, typename Image, typename Label = uint8_t>
-CIFAR10_dataset<Container, Image, Label> read_dataset_direct(std::size_t training_limit = 0, std::size_t test_limit = 0) {
+CIFAR10_dataset<Container, Image, Label> read_dataset_direct(std::size_t training_limit = 0) {
     CIFAR10_dataset<Container, Image, Label> dataset;
 
-    read_training<Container, Image>(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3 * 32 * 32); });
-    read_test<Container, Image>(training_limit, dataset.test_images, dataset.test_labels, [] { return Image(3 * 32 * 32); });
+    read_training(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3 * 32 * 32); });
+    read_test(training_limit, dataset.test_images, dataset.test_labels, [] { return Image(3 * 32 * 32); });
 
     return dataset;
 }
