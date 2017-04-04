@@ -116,11 +116,11 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
  */
 template <typename Images, typename Labels, typename Functor>
 void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_cifar10_file(images, labels, "cifar-10/data_batch_1.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/data_batch_2.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/data_batch_3.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/data_batch_4.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/data_batch_5.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_1.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_2.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_3.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_4.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_5.bin", limit, func);
 }
 
 /*!
@@ -134,7 +134,7 @@ void read_training(std::size_t limit, Images& images, Labels& labels, Functor fu
  */
 template <typename Images, typename Labels, typename Functor>
 void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_cifar10_file(images, labels, "cifar-10/test_batch.bin", limit, func);
+    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/test_batch.bin", limit, func);
 }
 
 /*!
