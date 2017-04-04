@@ -80,26 +80,32 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
         return;
     }
 
-    auto size = file.tellg();
-    std::unique_ptr<char[]> buffer(new char[size]);
+    auto file_size = file.tellg();
+    std::unique_ptr<char[]> buffer(new char[file_size]);
 
     //Read the entire file at once
     file.seekg(0, std::ios::beg);
-    file.read(buffer.get(), size);
+    file.read(buffer.get(), file_size);
     file.close();
 
     std::size_t start = images.size();
 
-    // Prepare the size for the new
-    images.reserve(images.size() + 10000);
-    labels.resize(labels.size() + 10000);
+    size_t size = 10000;
 
-    for(std::size_t i = 0; i < 10000; ++i){
+    if(limit > 0 && limit < size){
+        size = limit;
+    }
+
+    // Prepare the size for the new
+    images.reserve(images.size() + size);
+    labels.resize(labels.size() + size);
+
+    for(std::size_t i = 0; i < size; ++i){
         labels[start + i] = buffer[i * 3072];
 
         images.push_back(func());
 
-        for(std::size_t j = 0; i < 10000; ++i){
+        for(std::size_t j = 0; i < 3072; ++i){
             images[start + i] = buffer[i * 3072 + j];
         }
     }
@@ -142,12 +148,12 @@ void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) 
  *
  * The dataset is assumed to be in a cifar-10 subfolder
  *
- * \param training_limit The maximum number of elements to read from training set (0: no limit)
- * \param test_limit The maximum number of elements to read from test set (0: no limit)
+ * \param training_limit The maximum number of elements to read from data set (0: no limit)
+ *
  * \return The dataset
  */
 template <template <typename...> class Container, typename Image, typename Label = uint8_t>
-CIFAR10_dataset<Container, Image, Label> read_dataset_3d(std::size_t training_limit = 0, std::size_t test_limit = 0) {
+CIFAR10_dataset<Container, Image, Label> read_dataset_3d(std::size_t training_limit = 0) {
     CIFAR10_dataset<Container, Image, Label> dataset;
 
     read_training<Container, Image>(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
