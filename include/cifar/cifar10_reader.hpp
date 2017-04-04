@@ -118,7 +118,6 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
  *
  * \param limit The maximum number of elements to read (0: no limit)
  * \param func The functor to create the image objects.
- * \return Container filled with the images
  */
 template <typename Images, typename Labels, typename Functor>
 void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
@@ -130,13 +129,12 @@ void read_training(std::size_t limit, Images& images, Labels& labels, Functor fu
 }
 
 /*!
- * \brief Read all test images and return a container filled with the images.
+ * \brief Read all test data.
  *
  * The dataset is assumed to be in a cifar-10 subfolder
  *
  * \param limit The maximum number of elements to read (0: no limit)
  * \param func The functor to create the image objects.
- * \return Container filled with the images
  */
 template <typename Images, typename Labels, typename Functor>
 void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) {
