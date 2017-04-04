@@ -71,7 +71,7 @@ struct CIFAR10_dataset {
  * \param limit The maximum number of elements to read (0: no limit)
  */
 template <typename Images, typename Labels, typename Func>
-void read_cifar10_file(Images& images, Labels& labels, const std::string& path, std::size_t limit = 0, Func func) {
+void read_cifar10_file(Images& images, Labels& labels, const std::string& path, std::size_t limit, Func func) {
     std::ifstream file;
     file.open(path, std::ios::in | std::ios::binary | std::ios::ate);
 
