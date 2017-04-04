@@ -77,7 +77,7 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
 
     if (!file) {
         std::cout << "Error opening file" << std::endl;
-        return {};
+        return;
     }
 
     auto size = file.tellg();
