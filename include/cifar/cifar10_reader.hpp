@@ -72,6 +72,10 @@ struct CIFAR10_dataset {
  */
 template <typename Images, typename Labels, typename Func>
 void read_cifar10_file(Images& images, Labels& labels, const std::string& path, std::size_t limit, Func func) {
+    if(limit && limit <= images.size()){
+        return;
+    }
+
     std::ifstream file;
     file.open(path, std::ios::in | std::ios::binary | std::ios::ate);
 
@@ -91,9 +95,10 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
     std::size_t start = images.size();
 
     size_t size = 10000;
+    size_t capacity = limit - images.size();
 
-    if(limit > 0 && limit < size){
-        size = limit;
+    if(capacity > 0 && capacity < size){
+        size = capacity;
     }
 
     // Prepare the size for the new
@@ -101,12 +106,12 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
     labels.resize(labels.size() + size);
 
     for(std::size_t i = 0; i < size; ++i){
-        labels[start + i] = buffer[i * 3072];
+        labels[start + i] = buffer[i * 3073];
 
         images.push_back(func());
 
-        for(std::size_t j = 0; i < 3072; ++i){
-            images[start + i] = buffer[i * 3072 + j];
+        for(std::size_t j = 1; j < 3073; ++j){
+            images[start + i][j - 1] = buffer[i * 3073 + j];
         }
     }
 }
