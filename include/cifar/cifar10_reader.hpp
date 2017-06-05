@@ -80,7 +80,7 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
     file.open(path, std::ios::in | std::ios::binary | std::ios::ate);
 
     if (!file) {
-        std::cout << "Error opening file" << std::endl;
+        std::cout << "Error opening file: " << path << std::endl;
         return;
     }
 
@@ -117,6 +117,19 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
 }
 
 /*!
+ * \brief Read all test data.
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels, typename Functor>
+void read_test(const std::string& folder, std::size_t limit, Images& images, Labels& labels, Functor func) {
+    read_cifar10_file(images, labels, folder + "/test_batch.bin", limit, func);
+}
+
+/*!
  * \brief Read all training data
  *
  * The dataset is assumed to be in a cifar-10 subfolder
@@ -125,12 +138,12 @@ void read_cifar10_file(Images& images, Labels& labels, const std::string& path, 
  * \param func The functor to create the image objects.
  */
 template <typename Images, typename Labels, typename Functor>
-void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_1.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_2.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_3.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_4.bin", limit, func);
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/data_batch_5.bin", limit, func);
+void read_training(const std::string& folder, std::size_t limit, Images& images, Labels& labels, Functor func) {
+    read_cifar10_file(images, labels, folder + "/data_batch_1.bin", limit, func);
+    read_cifar10_file(images, labels, folder + "/data_batch_2.bin", limit, func);
+    read_cifar10_file(images, labels, folder + "/data_batch_3.bin", limit, func);
+    read_cifar10_file(images, labels, folder + "/data_batch_4.bin", limit, func);
+    read_cifar10_file(images, labels, folder + "/data_batch_5.bin", limit, func);
 }
 
 /*!
@@ -143,7 +156,122 @@ void read_training(std::size_t limit, Images& images, Labels& labels, Functor fu
  */
 template <typename Images, typename Labels, typename Functor>
 void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_cifar10_file(images, labels, "cifar-10/cifar-10-batches-bin/test_batch.bin", limit, func);
+    read_test("cifar-10/cifar-10-batches-bin", limit, images, labels, func);
+}
+
+/*!
+ * \brief Read all training data
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels, typename Functor>
+void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
+    read_training("cifar-10/cifar-10-batches-bin", limit, images, labels, func);
+}
+
+/*!
+ * \brief Read a CIFAR 10 data file inside the given containers
+ * \param images The container to fill with the labels
+ * \param path The path to the label file
+ * \param limit The maximum number of elements to read (0: no limit)
+ */
+template <typename Images, typename Labels>
+void read_cifar10_file_categorical(Images& images, Labels& labels, const std::string& path, std::size_t limit, size_t start) {
+    if(limit && limit <= start){
+        return;
+    }
+
+    std::ifstream file;
+    file.open(path, std::ios::in | std::ios::binary | std::ios::ate);
+
+    if (!file) {
+        std::cout << "Error opening file: " << path << std::endl;
+        return;
+    }
+
+    auto file_size = file.tellg();
+    std::unique_ptr<char[]> buffer(new char[file_size]);
+
+    //Read the entire file at once
+    file.seekg(0, std::ios::beg);
+    file.read(buffer.get(), file_size);
+    file.close();
+
+    size_t size = 10000;
+    size_t capacity = limit - start;
+
+    if(capacity > 0 && capacity < size){
+        size = capacity;
+    }
+
+    for(std::size_t i = 0; i < size; ++i){
+        const size_t l = buffer[i * 3073];
+
+        labels(start + i)(l) = 1.0;
+
+        for(std::size_t j = 1; j < 3073; ++j){
+            images(start + i)[j - 1] = buffer[i * 3073 + j];
+        }
+    }
+}
+
+/*!
+ * \brief Read all training data
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels>
+void read_training_categorical(const std::string& folder, std::size_t limit, Images& images, Labels& labels) {
+    read_cifar10_file_categorical(images, labels, folder + "/data_batch_1.bin", limit, 0);
+    read_cifar10_file_categorical(images, labels, folder + "/data_batch_2.bin", limit, 10000);
+    read_cifar10_file_categorical(images, labels, folder + "/data_batch_3.bin", limit, 20000);
+    read_cifar10_file_categorical(images, labels, folder + "/data_batch_4.bin", limit, 30000);
+    read_cifar10_file_categorical(images, labels, folder + "/data_batch_5.bin", limit, 40000);
+}
+
+/*!
+ * \brief Read all test data.
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels>
+void read_test_categorical(const std::string& folder, std::size_t limit, Images& images, Labels& labels) {
+    read_cifar10_file_categorical(images, labels, folder + "/test_batch.bin", limit, 0);
+}
+
+/*!
+ * \brief Read all training data
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels>
+void read_training_categorical(std::size_t limit, Images& images, Labels& labels) {
+    read_training_categorical("cifar-10/cifar-10-batches-bin", limit, images, labels);
+}
+
+/*!
+ * \brief Read all test data.
+ *
+ * The dataset is assumed to be in a cifar-10 subfolder
+ *
+ * \param limit The maximum number of elements to read (0: no limit)
+ * \param func The functor to create the image objects.
+ */
+template <typename Images, typename Labels>
+void read_test_categorical(std::size_t limit, Images& images, Labels& labels) {
+    read_test_categorical("cifar-10/cifar-10-batches-bin", limit, images, labels);
 }
 
 /*!
