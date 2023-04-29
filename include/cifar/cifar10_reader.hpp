@@ -289,7 +289,7 @@ CIFAR10_dataset<Container, Image, Label> read_dataset_3d(std::size_t training_li
     CIFAR10_dataset<Container, Image, Label> dataset;
 
     read_training(training_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
-    read_test(test_limit, dataset.training_images, dataset.training_labels, [] { return Image(3, 32, 32); });
+    read_test(test_limit, dataset.test_images, dataset.test_labels, [] { return Image(3, 32, 32); });
 
     return dataset;
 }
